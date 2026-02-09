@@ -11,19 +11,20 @@ from utils import run_pipeline_plots as rpp
 or if we have a single source test and we want the other data as well. If we are doing a source test and just want a single CdTe, just edit to have arrays
 with one entry.
 '''
-cdte_list = ['CdTe4'] #['CdTe1', 'CdTe3', 'CdTe4', 'CdTe5']
-rn = 'run820' #['run3', 'run379', 'run447', 'run383']
+cdte_list = ['CdTe1', 'CdTe3', 'CdTe4', 'CdTe5']
+rn = 'run820' 
 directory = f'/Users/pet00184/FOXSI_Analysis/New_FOXSI5_CDTE/BerkeleyIntegrationTests/Aug28/Run820' #this will be the parentd directory for each CdTe folder
 
+#mostly for plot titles
 date = 'Aug28'
 voltage = '200V'
 temp = 'neg20'
-sources = ['No source'] #['No source', 'No source', 'No source', 'No source']
-energy_plotting_range = (10, 60)
+sources = ['Am241', 'No source', 'No source', 'No source']
+energy_plotting_range = (10, 60) #in keV
 lab_testing = True  # skip path3?
 
 # For better plotting and saving files
-save_sources = ['nosource'] #['nosource', 'nosource', 'nosource', 'nosource']
+save_sources = ['Am241', 'nosource', 'nosource', 'nosource']
 fancy_temp = '-20ºC'
 ############################################################################
 
