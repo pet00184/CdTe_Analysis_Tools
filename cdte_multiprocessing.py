@@ -61,9 +61,9 @@ def process_cdte(cdte, rn, directory, date, voltage, temp, source, save_source, 
     path = os.path.join(directory, cdte)
     print(f'DOING {cdte}')
 
-    # # First split into batches
-    # sf.split_folder_by_size(path)
-    # batch_list = os.listdir(path)
+    # First split into batches
+    sf.split_folder_by_size(path)
+    batch_list = os.listdir(path)
 
     run_dict = {
         'cdte': cdte_id_dict[cdte],
@@ -76,17 +76,17 @@ def process_cdte(cdte, rn, directory, date, voltage, temp, source, save_source, 
         'plot_title_name': f'{cdte} {date} 2025 \n {rn}, {source}, {fancy_temp}, {voltage}'
     }
 
-    # # Decide whether to parallelize batches or not
-    # if parallel_batches:
-    #     with ProcessPoolExecutor() as executor:
-    #         futures = [executor.submit(process_batch, batch, path, run_dict,
-    #                                    energy_plotting_range, fancy_temp, voltage, lab_testing)
-    #                    for batch in batch_list]
-    #         for f in as_completed(futures):
-    #             f.result()
-    # else:
-    #     for batch in batch_list:
-    #         process_batch(batch, path, run_dict, energy_plotting_range, fancy_temp, voltage, lab_testing)
+    # Decide whether to parallelize batches or not
+    if parallel_batches:
+        with ProcessPoolExecutor() as executor:
+            futures = [executor.submit(process_batch, batch, path, run_dict,
+                                       energy_plotting_range, fancy_temp, voltage, lab_testing)
+                       for batch in batch_list]
+            for f in as_completed(futures):
+                f.result()
+    else:
+        for batch in batch_list:
+            process_batch(batch, path, run_dict, energy_plotting_range, fancy_temp, voltage, lab_testing)
 
     # Combine and re-plot
     print(f'COMBINING {cdte} NOW!!')
