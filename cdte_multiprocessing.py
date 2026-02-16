@@ -11,20 +11,20 @@ from utils import run_pipeline_plots as rpp
 or if we have a single source test and we want the other data as well. If we are doing a source test and just want a single CdTe, just edit to have arrays
 with one entry.
 '''
-cdte_list = ['CdTe1', 'CdTe3', 'CdTe4', 'CdTe5']
+cdte_list = ['CdTe4']
 rn = 'run820' 
-directory = f'/Users/pet00184/FOXSI_Analysis/New_FOXSI5_CDTE/BerkeleyIntegrationTests/Aug28/Run820' #this will be the parentd directory for each CdTe folder
+directory = f'/Users/pet00184/FOXSI_Analysis/updated2026plotting/BerkeleyCoolingTests/Aug282025/Am241_OnAttenuatorRing/CdTe4_Am241[run820]' #this will be the parentd directory for each CdTe folder
 
 #mostly for plot titles
 date = 'Aug28'
 voltage = '200V'
 temp = 'neg20'
-sources = ['Am241', 'No source', 'No source', 'No source']
-energy_plotting_range = (10, 60) #in keV
+sources = ['Am241']
+energy_plotting_range = (10, 70) #in keV
 lab_testing = True  # skip path3?
 
 # For better plotting and saving files
-save_sources = ['Am241', 'nosource', 'nosource', 'nosource']
+save_sources = ['Am241']
 fancy_temp = '-20ºC'
 ############################################################################
 
@@ -57,13 +57,13 @@ def process_batch(batch, path, run_dict, energy_plotting_range, fancy_temp, volt
 
 #the main thing that goes through each CdTe
 def process_cdte(cdte, rn, directory, date, voltage, temp, source, save_source, fancy_temp, lab_testing, energy_plotting_range, parallel_batches=True):
-    """Process one CdTe detector across all batches"""
+    # """Process one CdTe detector across all batches"""
     path = os.path.join(directory, cdte)
     print(f'DOING {cdte}')
 
-    # First split into batches
-    sf.split_folder_by_size(path)
-    batch_list = os.listdir(path)
+    # # First split into batches
+    # sf.split_folder_by_size(path)
+    # batch_list = os.listdir(path)
 
     run_dict = {
         'cdte': cdte_id_dict[cdte],
@@ -76,22 +76,22 @@ def process_cdte(cdte, rn, directory, date, voltage, temp, source, save_source, 
         'plot_title_name': f'{cdte} {date} 2025 \n {rn}, {source}, {fancy_temp}, {voltage}'
     }
 
-    # Decide whether to parallelize batches or not
-    if parallel_batches:
-        with ProcessPoolExecutor() as executor:
-            futures = [executor.submit(process_batch, batch, path, run_dict,
-                                       energy_plotting_range, fancy_temp, voltage, lab_testing)
-                       for batch in batch_list]
-            for f in as_completed(futures):
-                f.result()
-    else:
-        for batch in batch_list:
-            process_batch(batch, path, run_dict, energy_plotting_range, fancy_temp, voltage, lab_testing)
+    # # Decide whether to parallelize batches or not
+    # if parallel_batches:
+    #     with ProcessPoolExecutor() as executor:
+    #         futures = [executor.submit(process_batch, batch, path, run_dict,
+    #                                    energy_plotting_range, fancy_temp, voltage, lab_testing)
+    #                    for batch in batch_list]
+    #         for f in as_completed(futures):
+    #             f.result()
+    # else:
+    #     for batch in batch_list:
+    #         process_batch(batch, path, run_dict, energy_plotting_range, fancy_temp, voltage, lab_testing)
 
     # Combine and re-plot
     print(f'COMBINING {cdte} NOW!!')
     sf.combine_paths(path, run_dict)
-    sf.do_plots(path, run_dict, e_range=energy_plotting_range)
+    #sf.do_plots(path, run_dict, e_range=energy_plotting_range)
     print(f'CdTe {cdte} DONE')
 
 if __name__ == "__main__":

@@ -151,9 +151,61 @@ def slim_and_compress_fits(input_fits, output_fits_gz,
 # Example usage
 # ============================================================
 
+# ============================================================
+# Batch slimming utility
+# ============================================================
+
+def slim_all_batch_path2_files(base_folder, keep_columns=PATH2_NEEDED_COLUMNS):
+    """
+    Walk through batch_* folders and slim every PATH2 FITS file found.
+    Produces skinny_*.fits.gz outputs inside each batch folder.
+    """
+
+    print("\n===================================================")
+    print(" Slimming ALL batch PATH2 FITS files")
+    print("===================================================")
+
+    for dirpath, dirnames, filenames in os.walk(base_folder):
+
+        # Only look inside batch_* folders
+        if "batch_" not in dirpath:
+            continue
+
+        # Find PATH2 FITS files
+        for fn in filenames:
+            if fn.endswith("_PATH2.fits"):
+
+                input_fits = os.path.join(dirpath, fn)
+
+                # Output file name
+                output_fits_gz = os.path.join(
+                    dirpath,
+                    "skinny_" + fn.replace(".fits", ".fits.gz")
+                )
+
+                print("\n------------------------------------------")
+                print(f"Batch file found:\n{input_fits}")
+                print(f"→ Writing skinny version:\n{output_fits_gz}")
+                print("------------------------------------------")
+
+                slim_and_compress_fits(
+                    input_fits,
+                    output_fits_gz,
+                    keep_columns=keep_columns
+                )
+
+    print("\n===================================================")
+    print(" Finished slimming all batch PATH2 files!")
+    print("===================================================\n")
+
+
 if __name__ == "__main__":
 
-    input_file = '/Volumes/UMN CdTe/FOXSI5_data_UMN/UMN_2025_data/cooler_tests/July10/Am241Fe55_Cooling_1hour/CdTe1/combined_foxsi_cdte1_run348_PATH2.fits'
-    output_file = "updated2026plotting/UMNCoolingTests/July102025/CdTe1Am241Fe55/CdTe1/slim_foxsi_cdte1_run348_PATH2.fits.gz"
+    # input_file = "/Users/pet00184/FOXSI_Analysis/updated2026plotting/BerkeleyCoolingTests/Aug282025/CdTe4Fe55/combined_foxsi_cdte4_run800_PATH2.fits"
+    # output_file = "/Users/pet00184/FOXSI_Analysis/updated2026plotting/BerkeleyCoolingTests/Aug282025/CdTe4Fe55/skinny_foxsi_cdte4_run800_PATH2.fits.gz"
 
-    slim_and_compress_fits(input_file, output_file)
+    # slim_and_compress_fits(input_file, output_file)
+
+    #skinny the batches: 
+    base_folder = "/Users/pet00184/FOXSI_Analysis/updated2026plotting/BerkeleyCoolingTests/Aug282025/CdTe4Fe55_30minRun/"
+    slim_all_batch_path2_files(base_folder)

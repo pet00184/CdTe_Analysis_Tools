@@ -101,12 +101,12 @@ class SavingAndPlotting:
 
         Plots are saved to the specified file path given by self.save_path.
         '''
-        self.make_path1_plots(pedestal_top)
+        #self.make_path1_plots(pedestal_top)
         print(f'Plots saved to {self.save_path}')
         if not self.run_dict['save_source'] == 'nosource':
             print('Now starting PATH2.')
             self.saving_cdte.save_cdte_fits_path2()
-            self.make_path2_plots(e_range)
+            #self.make_path2_plots(e_range)
             print(f'Plots saved to {self.save_path}')
             if not lab_testing:
                 print('Now starting PATH3')
