@@ -48,10 +48,10 @@ PATH2_NEEDED_COLUMNS = [
     "pt_merged_position_list",
 
     #--- More stuff for multiclump analysis
-    "pt_valid_energy_array"
-    "al_valid_energy_array"
+    "pt_valid_energy_array",
+    "al_valid_energy_array",
 
-    "pt_merged_nhit_list"
+    "pt_merged_nhit_list",
     "al_merged_nhit_list"
 ]
 
