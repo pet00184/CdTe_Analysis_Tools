@@ -102,6 +102,7 @@ class SavingAndPlotting:
         Plots are saved to the specified file path given by self.save_path.
         '''
         #self.make_path1_plots(pedestal_top)
+        #rlp.make_path1_plots(self.saving_cdte)
         print(f'Plots saved to {self.save_path}')
         if not self.run_dict['save_source'] == 'nosource':
             print('Now starting PATH2.')

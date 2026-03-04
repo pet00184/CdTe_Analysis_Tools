@@ -39,15 +39,15 @@ class Path1Plots:
         if filter_pseudo_triggers:
             pseudo_mask = self.cdte_data['flag_pseudo'] == 0
             self.cdte_data = self.cdte_data[pseudo_mask]
-        if keep_only_single_clumps:
-            self.keep_single_clumps()
+        # if keep_only_single_clumps:
+        #     self.keep_single_clumps()
         self.calculate_livetime_and_countrates()
 
-    def keep_single_clumps(self):
-        mask_al = self.cdte_data['al_merged_nhit'] == 1
-        self.cdte_data = self.cdte_data[mask_al]
-        mask_pt = self.cdte_data['pt_merged_nhit'] == 1
-        self.cdte_data = self.cdte_data[mask_pt]
+    # def keep_single_clumps(self):
+    #     mask_al = self.cdte_data['al_merged_nhit'] == 1
+    #     self.cdte_data = self.cdte_data[mask_al]
+    #     mask_pt = self.cdte_data['pt_merged_nhit'] == 1
+    #     self.cdte_data = self.cdte_data[mask_pt]
 
     def calculate_livetime_and_countrates(self):
         ''' Calculates the livetime and total count rates for the observation. This is done at the beginning so that I can use global variables for the two livetime plots, and so that the countrate can be included in pedestal plotting (still need to add that in when finalizing the summary info).
@@ -56,6 +56,10 @@ class Path1Plots:
         self.total_runtime = np.sum(self.livetime)
         self.total_counts = len(self.cdte_data['ti'])
         self.count_rate = self.total_counts/self.total_runtime
+
+    # def make_adc_hist(self):
+    #     '''Calculated a histogram of the ADC values to get a quick idea of the spectra'''
+
 
     def take_out_edge_channels(self):
         '''Sets everything in the guard rail remapped channels to their null values. For all trigger hits that occur within channels 0-5 and 124-127, the remapped channel is set to 128 and the cmn_adc_al value is set to 0. This is done to avoid mapping only the edges when making an image incorporating maximum adc values for each trigger.'''
@@ -166,7 +170,7 @@ class Path1Plots:
         ax2.set_ylabel('Ti')
         ax2.set_xlabel('Unixtime')
 
-    def livetime_histogram(self, ax, livetime_plot_cutoff):
+    def livetime_histogram(self, ax, livetime_plot_cutoff, nbins=80):
         ''' Plots a histogram of the livetimes, with the expected exponential waiting time distrubution overplotted. The exponential distrubution is based on the expected waiting time for another count if the counts follow a Poisson distribution, given by: 
 
                 I(t)dt = r exp(-rt)dt 
@@ -180,11 +184,12 @@ class Path1Plots:
         ax
         '''
         # Histogram of the counts (not normalized)
-        counts, bins, _ = ax.hist(self.livetime, bins=80, density=False, label="Livetime histogram")
+        counts, bins, _ = ax.hist(self.livetime, bins=nbins, density=False, label="Livetime histogram")
         
         # Exponential curve scaled to counts, and accounting for bin width
         bin_width = bins[1] - bins[0]
         t = np.linspace(0, self.livetime.max(), 500)
+        #t = np.linspace(0, livetime_plot_cutoff, 500)
         expected_counts = len(self.livetime) * self.count_rate * np.exp(-self.count_rate * t) * bin_width
 
         ax.plot(t, expected_counts, label=r"$N r e^{-rt}$")
@@ -207,7 +212,7 @@ class Path1Plots:
 
         return ax
 
-    def cmnmode_vs_livetime(self, axes, livetime_plot_cutoff, common_mode_range):
+    def cmnmode_vs_livetime(self, axes, livetime_plot_cutoff, common_mode_range, nbins=500):
         '''2D histogram of the common mode vs. livetime. This is based off connections Yixian has found between commond mode values changing (either increasing or decreasing) for very low livetimes. Note that Yixian did not see a difference in gain shifting when taking out low livetime or outlier common mode values.
 
         Input:
@@ -233,7 +238,7 @@ class Path1Plots:
             h = ax.hist2d(
                 self.livetime,
                 asic,
-                bins=[500, 500]
+                bins=[nbins, 500]
             )
             ax.set_xlim(0, livetime_plot_cutoff)
             ax.set_ylim(common_mode_range)
@@ -286,6 +291,13 @@ class Path2Plots:
         mask_pt = self.path2_data['pt_merged_nhit'] == 1
         self.path2_data = self.path2_data[mask_pt]
 
+    def keep_single_clumps_singleside(self):
+        mask_al = self.path2_data['al_merged_nhit'] == 1
+        cdte_data_get_al = self.path2_data[mask_al]
+        mask_pt = self.path2_data['pt_merged_nhit'] == 1
+        cdte_data_get_pt = self.path2_data[mask_pt]
+        return cdte_data_get_al, cdte_data_get_pt
+
     def single_hits(self):
         mask_al = self.path2_data["al_nhit"]==1 
         mask_pt = self.path2_data["pt_nhit"]==1
@@ -311,7 +323,7 @@ class Path2Plots:
         self.total_counts = len(self.path2_data['ti'])
         self.count_rate = self.total_counts/self.total_runtime
 
-    def make_spectra(self, ax, e_range, single_hit=False, double_hit=False):
+    def make_spectra(self, ax, e_range, single_hit=False, double_hit=False, single_clump=False):
         ''' Produces either a single hit, double hit or all event specttra (keep single clump filtering in mind). 
 
         Input:
@@ -328,6 +340,9 @@ class Path2Plots:
         if double_hit:
             cdte_data_ge_al, cdte_data_ge_pt = self.double_hits()
             plotname = "Double Hit Spectra, No Gap Loss Correction"
+        if single_clump:
+            cdte_data_ge_al, cdte_data_ge_pt = self.keep_single_clumps_singleside()
+            plotname = "Single Clump Spectra (Only filtered per side)"
 
         lines = self.sourcelines_dict[self.source_list] 
 
@@ -348,7 +363,7 @@ class Path2Plots:
         ax.set_title(plotname)
         return ax
 
-    def energy_vs_livetime(self, axes, source, livetime_plot_cutoff, e_range, single_hit=False, double_hit=False):
+    def energy_vs_livetime(self, axes, source, livetime_plot_cutoff, e_range, single_hit=False, double_hit=False, nbins=500):
         '''2D histogram of the energy vs. livetime, to help check for any energy gain shifting due to low livetimes or pileup.
 
         Input:
@@ -370,7 +385,7 @@ class Path2Plots:
 
         lines = self.sourcelines_dict[self.source_list] 
         energy_bins = np.arange(e_range[0], e_range[1] + 0.2, 0.2) #keeping 0.2 keV bins
-        livetime_bins = 500
+        livetime_bins = nbins
 
         #Pt energies
         h0 = axes[0].hist2d(
@@ -913,7 +928,7 @@ class ChargeSharingPlotting:
 
         ax.set_xlabel('Energy [keV]')
         ax.set_ylabel('Counts')
-        ax.set_title('Single Clump Merged Energy Spectrum with Observed Peak Windows')
+        ax.set_title('Merged Energy Spectrum with Observed Peak Windows, Both Sides Must Be Single Clump')
         ax.set_xlim(e_range)
         ax.legend()
         return ax

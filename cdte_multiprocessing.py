@@ -11,20 +11,20 @@ from utils import run_pipeline_plots as rpp
 or if we have a single source test and we want the other data as well. If we are doing a source test and just want a single CdTe, just edit to have arrays
 with one entry.
 '''
-cdte_list = ['CdTe4']
-rn = 'run820' 
-directory = f'/Users/pet00184/FOXSI_Analysis/updated2026plotting/BerkeleyCoolingTests/Aug282025/Am241_OnAttenuatorRing/CdTe4_Am241[run820]' #this will be the parentd directory for each CdTe folder
+cdte_list = ['CdTe1'] #, 'CdTe3', 'CdTe4', 'CdTe5']
+rn = 'run1159' 
+directory = f'/Users/pet00184/FOXSI_Analysis/updated2026plotting/WSMR/Mar3_Am241Tests/Am241Cu/CdTe1_AmCu' #this will be the parentd directory for each CdTe folder
 
 #mostly for plot titles
-date = 'Aug28'
+date = 'Mar3'
 voltage = '200V'
 temp = 'neg20'
-sources = ['Am241']
+sources = ['Am241'] #, 'No Source', 'No Source', 'No Source']
 energy_plotting_range = (10, 70) #in keV
 lab_testing = True  # skip path3?
 
 # For better plotting and saving files
-save_sources = ['Am241']
+save_sources = ['Am241'] #, 'nosource', 'nosource', 'nosource']
 fancy_temp = '-20ºC'
 ############################################################################
 
@@ -61,7 +61,7 @@ def process_cdte(cdte, rn, directory, date, voltage, temp, source, save_source, 
     path = os.path.join(directory, cdte)
     print(f'DOING {cdte}')
 
-    # First split into batches
+    #First split into batches
     sf.split_folder_by_size(path)
     batch_list = os.listdir(path)
 

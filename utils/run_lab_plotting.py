@@ -109,14 +109,14 @@ def make_path1_plots(cdte_data, summary_dict, path1_plotconfigs):
 
     #livetime histogram
     fig, ax = plt.subplots(1,1, figsize=(8, 6))
-    plotter.livetime_histogram(ax, path1_plotconfigs["LivetimeTopRange"])
+    plotter.livetime_histogram(ax, path1_plotconfigs["LivetimeTopRange"], path1_plotconfigs['LivetimeBinNumber'])
     ax.set_title(title)
     add_infotext(ax)
     plt.savefig(f'{savename}_livetimehist.png', dpi=250, bbox_inches='tight')
 
     #common mode vs livetime
     fig, axes = plt.subplots(2, 2, figsize=(12, 8), sharex=True)
-    plotter.cmnmode_vs_livetime(axes, path1_plotconfigs["LivetimeTopRange"], path1_plotconfigs["CommonModeRange"])
+    plotter.cmnmode_vs_livetime(axes, path1_plotconfigs["LivetimeTopRange"], path1_plotconfigs["CommonModeRange"], nbins=path1_plotconfigs['LivetimeBinNumber'])
     plt.suptitle(title)
     add_infotext(axes[0, 1], colorbar=True)
     plt.savefig(f'{savename}_adcvslivetime.png', dpi=250, bbox_inches='tight')
@@ -166,6 +166,13 @@ def make_path2_plots(cdte_data, summary_dict, path2_plotconfigs):
     add_infotext(ax)
     plt.savefig(f'{savename}_doublehitspectra_nogaplosscorrection.png', dpi=250, bbox_inches='tight')
 
+    #Make single clump spectra
+    fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+    plotter.make_spectra(ax, path2_plotconfigs["SpectralEnergyRange"], single_clump=True)
+    plt.suptitle(title)
+    add_infotext(ax)
+    plt.savefig(f'{savename}_singleclumpspectra.png', dpi=250, bbox_inches='tight')
+
     #all event spectra
     fig, ax = plt.subplots(1, 1, figsize=(8, 6))
     plotter.make_spectra(ax, path2_plotconfigs["SpectralEnergyRange"])
@@ -189,7 +196,7 @@ def make_path2_plots(cdte_data, summary_dict, path2_plotconfigs):
 
     #energy vs livetime 2D histogram- All hits. Only doing this one to get the correct livetime
     fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharex=True, sharey=True)
-    plotter.energy_vs_livetime(axes, summary_dict["Source"], path2_plotconfigs["LivetimeTopRange"], path2_plotconfigs["SpectralEnergyRange"])
+    plotter.energy_vs_livetime(axes, summary_dict["Source"], path2_plotconfigs["LivetimeTopRange"], path2_plotconfigs["SpectralEnergyRange"], nbins=path2_plotconfigs['LivetimeBinNumber'])
     plt.suptitle(title)
     add_infotext(axes[1], colorbar=True)
     plt.savefig(f'{savename}_allevents_evslivetime.png', dpi=250, bbox_inches='tight')

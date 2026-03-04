@@ -46,6 +46,13 @@ PATH2_NEEDED_COLUMNS = [
     # --- Strip positions (pitch masking) ---
     "al_merged_position_list",
     "pt_merged_position_list",
+
+    #--- More stuff for multiclump analysis
+    "pt_valid_energy_array"
+    "al_valid_energy_array"
+
+    "pt_merged_nhit_list"
+    "al_merged_nhit_list"
 ]
 
 
@@ -207,5 +214,5 @@ if __name__ == "__main__":
     # slim_and_compress_fits(input_file, output_file)
 
     #skinny the batches: 
-    base_folder = "/Users/pet00184/FOXSI_Analysis/updated2026plotting/BerkeleyCoolingTests/Aug282025/CdTe4Fe55_30minRun/"
+    base_folder = "/Users/pet00184/FOXSI_Analysis/updated2026plotting/PFFR_FOXSI4_Comparisons/Cdte3_Am241(yixiansuggestion?)/CdTe3/batch_2"
     slim_all_batch_path2_files(base_folder)
